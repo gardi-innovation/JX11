@@ -94,11 +94,17 @@ void JX11AudioProcessor::changeProgramName (int index, const juce::String& newNa
 void JX11AudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     synth.allocateResources(sampleRate, samplesPerBlock);
+    reset();
 }
 
 void JX11AudioProcessor::releaseResources()
 {
     synth.deallocateResources();
+}
+
+void JX11AudioProcessor::reset()
+{
+    synth.reset();
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations
@@ -149,14 +155,14 @@ void JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float> &buffer, j
         // Render the audio that happens before this event (if any).
         int samplesThisSegment = metadata.samplePosition - bufferOffset;
         if(samplesThisSegment > 0) {
-            render(buffer,samplesThisSegment, bufferOffset);
+            render(buffer, samplesThisSegment, bufferOffset);
             bufferOffset += samplesThisSegment;
         }
         
         // Handle the event. Ignore MIDI messages such as sysex.
         if(metadata.numBytes <= 3){
-            uint8_t data1 = (metadata.numBytes >= 2) ? metadata.data[2]:0;
-            uint8_t data2 = (metadata.numBytes == 3) ? metadata.data[2]:0;
+            uint8_t data1 = (metadata.numBytes >= 2) ? metadata.data[1] : 0;
+            uint8_t data2 = (metadata.numBytes == 3) ? metadata.data[2] : 0;
             handleMIDI(metadata.data[0], data1, data2);
         }
     }
@@ -174,13 +180,21 @@ void JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float> &buffer, j
 void JX11AudioProcessor::handleMIDI(uint8_t data0, uint8_t data1, uint8_t data2)
 {
     char s[16];
-    snprintf(s, 16, "%02hhX %02hhX %02hhX", data0, data1, data2);
+    snprintf(s, 16, "%02hhx %02hhX %02hhX", data0, data1, data2);
     DBG(s);
+    
+    synth.midiMessage(data0, data1, data2);
 }
 
 void JX11AudioProcessor::render(juce::AudioBuffer<float> &buffer, int sampleCount, int bufferOffset)
 {
-    // do nothing yet
+    float* outputBuffers[2] = { nullptr, nullptr };
+    outputBuffers[0] = buffer.getWritePointer(0) + bufferOffset;
+    if(getTotalNumInputChannels() > 1) {
+        outputBuffers[1] = buffer.getWritePointer(1) + bufferOffset;
+    }
+    
+    synth.render(outputBuffers, sampleCount);
 }
 
 //==============================================================================
