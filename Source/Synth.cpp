@@ -32,7 +32,7 @@ void Synth::reset()
     noiseGen.reset();
 }
 
-void Synth::render(float **outputBuffers, int sampleCount)
+void Synth::render(float** outputBuffers, int sampleCount)
 {
     float* outputBufferLeft = outputBuffers[0];
     float* outputBufferRight = outputBuffers[1];
@@ -61,7 +61,7 @@ void Synth::render(float **outputBuffers, int sampleCount)
 
 void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
 {
-    switch(data0 & 0x7F){
+    switch(data0 & 0xF0){
     // Note off
     case 0x80:
         noteOff(data1 & 0x7F);
