@@ -45,7 +45,8 @@ void Synth::render(float** outputBuffers, int sampleCount)
         // 3
         float output = 0.0f;
         if(voice.note > 0){
-            output = noise * (voice.velocity / 127.0f) * 0.5f; // 4
+            //output = noise * (voice.velocity / 127.0f) * 0.5f; // 4
+            output = voice.render();
         }
         
         // 5
@@ -84,13 +85,22 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
 void Synth::noteOn(int note, int velocity)
 {
     voice.note = note;
-    voice.velocity = velocity;
+    //voice.velocity = velocity;
+    //float freq = 261.63f;
+    //freq = 14000;
+    float freq = 440.0f * std::exp2(float(note - 69) / 12.0f);
+    voice.osc.amplitude = (velocity / 127.0f) * 0.5f;
+    //voice.osc.freq = 261.63f;
+    //voice.osc.sampleRate = sampleRate;
+    //voice.osc.phaseOffset = 0.0f;
+    voice.osc.inc = freq / sampleRate;
+    voice.osc.reset();
 }
 
 void Synth::noteOff(int note)
 {
     if(voice.note == note){
         voice.note = 0;
-        voice.velocity = 0;
+        //voice.velocity = 0;
     }
 }

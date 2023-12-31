@@ -10,14 +10,23 @@
 
 #pragma once
 
+#include "Oscillator.h"
+
 struct Voice
 {
     int note;
-    int velocity;
+    //int velocity;
+    Oscillator osc;
     
     void reset()
     {
         note = 0;
-        velocity = 0;
+        //velocity = 0;
+        osc.reset();
+    }
+    
+    float render()
+    {
+        return osc.nextSample();
     }
 };
