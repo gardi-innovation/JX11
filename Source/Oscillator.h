@@ -27,9 +27,12 @@ public:
     {
         //sampleIndex = 0;
         phase = 0.0f;
-        sin0 = amplitude * std::sin(phase * TWO_PI);
-        sin1 = amplitude * std::sin(phase - inc) * TWO_PI;
-        dsin = 2.0f * std::cos(inc * TWO_PI);
+        
+        /* Sine
+        //sin0 = amplitude * std::sin(phase * TWO_PI);
+        //sin1 = amplitude * std::sin(phase - inc) * TWO_PI;
+        //dsin = 2.0f * std::cos(inc * TWO_PI);
+         */
     }
     
 //        float nextSample()
@@ -47,10 +50,19 @@ public:
 //        }
     float nextSample()
     {
+        /* Sine
         float sinx = dsin * sin0 - sin1;
         sin1 = sin0;
         sin0 = sinx;
         return sinx;
+         */
+        
+        // Sawtooth
+        phase += inc;
+        if(phase >= 1.0f){
+            phase -= 1.0f;
+        }
+        return amplitude * (2.0f * phase - 1.0f);
     }
     
 private:
