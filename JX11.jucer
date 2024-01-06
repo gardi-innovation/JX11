@@ -6,6 +6,7 @@
               pluginCode="JX11" pluginManufacturerCode="Gain" displaySplashScreen="0">
   <MAINGROUP id="yoRVeF" name="JX11">
     <GROUP id="{CDA481BB-8D83-EA68-F979-EAAB16CEFAD0}" name="Source">
+      <FILE id="AcDJ5Z" name="Preset.h" compile="0" resource="0" file="Source/Preset.h"/>
       <FILE id="dncgnt" name="Oscillator.h" compile="0" resource="0" file="Source/Oscillator.h"/>
       <FILE id="moA9KG" name="Utils.h" compile="0" resource="0" file="Source/Utils.h"/>
       <FILE id="I2WZ82" name="NoiseGenerator.h" compile="0" resource="0"

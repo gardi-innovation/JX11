@@ -40,13 +40,13 @@ void Synth::render(float** outputBuffers, int sampleCount)
     // 1
     for(int sample = 0; sample < sampleCount; ++sample){
         // 2
-        float noise = noiseGen.nextValue();
+        float noise = noiseGen.nextValue() * noiseMix;
         
         // 3
         float output = 0.0f;
         if(voice.note > 0){
             //output = noise * (voice.velocity / 127.0f) * 0.5f; // 4
-            output = voice.render();
+            output = voice.render() + noise;
         }
         
         // 5
