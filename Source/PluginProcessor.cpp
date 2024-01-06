@@ -30,7 +30,7 @@ JX11AudioProcessor::JX11AudioProcessor()
     castParameter(apvts, ParameterID::glideRate, glideRateParam);
     castParameter(apvts, ParameterID::glideBend, glideBendParam);
     castParameter(apvts, ParameterID::filterFreq, filterFreqParam);
-    castParameter(apvts, ParameterID::filterReso, filterReleaseParam);
+    castParameter(apvts, ParameterID::filterReso, filterResoParam);
     castParameter(apvts, ParameterID::filterEnv, filterEnvParam);
     castParameter(apvts, ParameterID::filterLFO, filterLFOParam);
     castParameter(apvts, ParameterID::filterVelocity, filterVelocityParam);
