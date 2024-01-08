@@ -32,11 +32,19 @@ public:
     float envSustain;
     float envRelease;
     
+    float oscMix;
+    
+    float detune;
+    float tune;
+    
 private:
     void noteOn(int note, int velocity);
     void noteOff(int note);
+    float calcPeriod(int note) const;
     
     float sampleRate;
     Voice voice;
     NoiseGenerator noiseGen;
+    
+    float pitchBend;
 };
