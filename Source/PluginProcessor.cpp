@@ -41,7 +41,7 @@ JX11AudioProcessor::JX11AudioProcessor()
     castParameter(apvts, ParameterID::envAttack, envAttackParam);
     castParameter(apvts, ParameterID::envDecay, envDecayParam);
     castParameter(apvts, ParameterID::envSustain, envSustainParam);
-    castParameter(apvts, ParameterID::envRelease, envReleaseParam),
+    castParameter(apvts, ParameterID::envRelease, envReleaseParam);
     castParameter(apvts, ParameterID::lfoRate, lfoRateParam);
     castParameter(apvts, ParameterID::vibrato, vibratoParam);
     castParameter(apvts, ParameterID::noise, noiseParam);
@@ -306,7 +306,7 @@ void JX11AudioProcessor::render(juce::AudioBuffer<float>& buffer, int sampleCoun
 {
     float* outputBuffers[2] = { nullptr, nullptr };
     outputBuffers[0] = buffer.getWritePointer(0) + bufferOffset;
-    if(getTotalNumInputChannels() > 1) {
+    if(getTotalNumOutputChannels() > 1) {
         outputBuffers[1] = buffer.getWritePointer(1) + bufferOffset;
     }
     
