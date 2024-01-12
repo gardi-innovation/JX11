@@ -43,8 +43,9 @@ public:
 private:
     void noteOn(int note, int velocity);
     void noteOff(int note);
-    float calcPeriod(int note) const;
+    float calcPeriod(int v, int note) const;
     void startVoice(int v, int note, int velocity);
+    int findFreeVoice() const;
     
     float sampleRate;
     //Voice voice;

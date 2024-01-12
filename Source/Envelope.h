@@ -45,7 +45,7 @@ public:
         return level > SILENCE;
     }
     
-    inline bool isAinAttack() const
+    inline bool isInAttack() const
     {
         return target >= 2.0f;
     }

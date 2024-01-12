@@ -11,6 +11,8 @@
 #include "Synth.h"
 #include "Utils.h"
 
+static const float ANALOG = 0.002f;
+
 Synth::Synth()
 {
     sampleRate = 44100.0f;
@@ -113,12 +115,18 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
 
 void Synth::noteOn(int note, int velocity)
 {
-    startVoice(0, note, velocity);
+    int v = 0;  // index of the voice to use (0 = mono voice)
+    
+    if(numVoices > 1){  //polyphonic
+        v = findFreeVoice();
+    }
+    
+    startVoice(v, note, velocity);
 }
 
 void Synth::startVoice(int v, int note, int velocity)
 {
-    float period = calcPeriod(note);
+    float period = calcPeriod(v, note);
     
     Voice& voice = voices[v];
     voice.period = period;
@@ -141,18 +149,33 @@ void Synth::startVoice(int v, int note, int velocity)
 
 void Synth::noteOff(int note)
 {
-    Voice& voice = voices[0];
-    
-    if(voice.note == note){
-        voice.release();
+    for(int v = 0; v < MAX_VOICES; v++){
+        if(voices[v].note == note){
+            voices[v].release();
+            voices[v].note = 0;
+        }
     }
 }
 
-float Synth::calcPeriod(int note) const
+float Synth::calcPeriod(int v, int note) const
 {
-    float period = tune * std::exp(-0.05776226505f * float(note));
+    float period = tune * std::exp(-0.05776226505f * (float(note) + ANALOG * float(v)));
     
     while(period < 6.0f || (period * detune) < 6.0f){ period += period; };
     
     return period;
+}
+
+int Synth::findFreeVoice() const
+{
+    int v = 0;
+    float l = 100.0f; // louder than any envelope!
+    
+    for(int i = 0; i < MAX_VOICES; ++i){
+        if(voices[i].env.level < l && !voices[i].env.isInAttack()){
+            l = voices[i].env.level;
+            v = i;
+        }
+    }
+    return v;
 }
