@@ -43,6 +43,9 @@ public:
     float volumeTrim;
     juce::LinearSmoothedValue<float> outputLevelSmoother;
     
+    float velocitySensitivity;
+    bool ignoreVelocity;
+    
 private:
     void noteOn(int note, int velocity);
     void noteOff(int note);
