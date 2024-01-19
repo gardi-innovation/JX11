@@ -46,6 +46,10 @@ public:
     float velocitySensitivity;
     bool ignoreVelocity;
     
+    const int LFO_MAX = 32;
+    float lfoInc;
+    float vibrato;
+    
 private:
     void noteOn(int note, int velocity);
     void noteOff(int note);
@@ -56,14 +60,14 @@ private:
     void restartMonoVoice(int note, int velocity);
     void shiftQueuedNotes();
     int nextQueuedNote();
+    void updateLFO();
     
     float sampleRate;
     //Voice voice;
     NoiseGenerator noiseGen;
-    
     float pitchBend;
-    
     bool sustainPedalPressed;
-    
     std::array<Voice, MAX_VOICES> voices;
+    int lfoStep;
+    float lfo; 
 };

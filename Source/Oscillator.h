@@ -21,6 +21,7 @@ class Oscillator
 public:
     float period = 0.0f;
     float amplitude = 1.0f;
+    float modulation = 1.0f;
     
     void reset()
     {
@@ -39,7 +40,7 @@ public:
         phase += inc;
         
         if(phase <= PI_OVER_4){
-            float halfPeriod = period / 2.0f;
+            float halfPeriod = (period / 2.0f) * modulation;
             phaseMax = std::floor(0.5f + halfPeriod) - 0.5f;
             dc = 0.5f * amplitude / phaseMax;
             phaseMax *= PI;
@@ -47,11 +48,6 @@ public:
             inc = phaseMax / halfPeriod;
             phase = -phase;
             
-//            if(phase*phase > 1e-9){
-//                output = amplitude * std::sin(phase) / phase;
-//            } else{
-//                output = amplitude;
-//            }
             sin0 = amplitude * std::sin(phase);
             sin1 = amplitude * std::sin(phase - inc);
             dsin = 2.0f * std::cos(inc);
@@ -66,7 +62,6 @@ public:
                 phase = phaseMax + phaseMax - phase;
                 inc = -inc;
             }
-            //output = amplitude * std::sin(phase) / phase;
             float sinp = dsin * sin0 - sin1;
             sin1 = sin0;
             sin0 = sinp;
