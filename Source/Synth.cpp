@@ -41,6 +41,7 @@ void Synth::reset()
     outputLevelSmoother.reset(sampleRate, 0.05);
     lfo = 0.0f;
     lfoStep = 0;
+    modWheel = 0.0f;
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -118,15 +119,17 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
             
     // Pitch bend
     case 0xE0:
-            pitchBend = std::exp(-0.000014102f * float(data1 + 128 * data2 - 8192));
-            break;
+        pitchBend = std::exp(-0.000014102f * float(data1 + 128 * data2 - 8192));
+        break;
     
     // Control change
     case 0xB0: {
         controlChange(data1, data2);
         break;
     }
-            
+    case 0x01:
+        modWheel = 0.000005f * float(data2 * data2);
+        break;
     }
 }
 
@@ -164,8 +167,9 @@ void Synth::startVoice(int v, int note, int velocity)
     voice.osc1.amplitude = volumeTrim * vel;
     voice.osc2.amplitude = voice.osc1.amplitude * oscMix;
     
-    //voice.osc1.reset();
-    //voice.osc2.reset();
+    if(vibrato == 0.0f && pwmDepth > 0.0f) {
+        voice.osc2.squareWave(voice.osc1, voice.period);
+    }
     
     Envelope& env = voice.env;
     env.attackMultiplier = envAttack;
@@ -289,13 +293,14 @@ void Synth::updateLFO()
         
         const float sine = std::sin(lfo);
         
-        float vibratoMod = 1.0f + sine * vibrato;
+        float vibratoMod = 1.0f + sine * (modWheel + vibrato);
+        float pwm = 1.0f + sine * (modWheel + pwmDepth);
         
         for (int v = 0; v < MAX_VOICES; ++v){
             Voice& voice = voices[v];
             if(voice.env.isActive()){
                 voice.osc1.modulation = vibratoMod;
-                voice.osc2.modulation = vibratoMod;
+                voice.osc2.modulation = pwm;
             }
         }
     }

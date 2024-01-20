@@ -50,6 +50,8 @@ public:
     float lfoInc;
     float vibrato;
     
+    float pwmDepth;
+    
 private:
     void noteOn(int note, int velocity);
     void noteOff(int note);
@@ -69,5 +71,6 @@ private:
     bool sustainPedalPressed;
     std::array<Voice, MAX_VOICES> voices;
     int lfoStep;
-    float lfo; 
+    float lfo;
+    float modWheel;
 };
