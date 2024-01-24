@@ -260,8 +260,6 @@ void JX11AudioProcessor::update()
     
     synth.numVoices = (polyModeParam->getIndex() == 0) ? 1 : Synth::MAX_VOICES;
     
-    synth.volumeTrim = 0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * 1.5f;
-    
     synth.outputLevelSmoother.setTargetValue(juce::Decibels::decibelsToGain(outputLevelParam->get()));
     
     float filterVelocity = filterVelocityParam->get();
@@ -295,6 +293,11 @@ void JX11AudioProcessor::update()
     synth.glideBend = glideBendParam->get();
     
     synth.filterKeyTracking = 0.08f * filterFreqParam->get() - 1.5f;
+    
+    float filterReso = filterReleaseParam->get() / 100.0f;
+    synth.filterQ = std::exp(3.0f * filterReso);
+    
+    synth.volumeTrim = 0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * (1.5f - 0.5f * filterReso);
 }
 
 void JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)

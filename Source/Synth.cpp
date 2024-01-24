@@ -47,6 +47,7 @@ void Synth::reset()
     lfoStep = 0;
     modWheel = 0.0f;
     lastNote = 0;
+    resonanceCtl = 1.0f;
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -60,6 +61,7 @@ void Synth::render(float** outputBuffers, int sampleCount)
         if(voice.env.isActive()){
             updatePeriod(voice);
             voice.glideRate = glideRate;
+            voice.filterQ = filterQ * resonanceCtl;
         }
     }
 
@@ -167,6 +169,7 @@ void Synth::startVoice(int v, int note, int velocity)
     voice.target = period;
     
     voice.cutoff = sampleRate / (period * PI);
+    voice.cutoff *= std::exp(velocitySensitivity * float(velocity - 64));
     
     int noteDistance = 0;
     if(lastNote > 0){
@@ -256,6 +259,9 @@ void Synth::controlChange(uint8_t data1, uint8_t data2)
                 noteOff(SUSTAIN);
             }
             break;
+        case 0x47:
+            resonanceCtl = 154.0f / float(154 - data2);
+            break;
         default:
             if(data1 >= 0x78){
                 for(int v = 0; v < MAX_VOICES; ++v){
@@ -278,6 +284,11 @@ void Synth::restartMonoVoice(int note, int velocity)
     voice.env.level += SILENCE + SILENCE;
     voice.note = note;
     voice.updatePanning();
+    
+    voice.cutoff = sampleRate / (period * PI);
+    if(velocity > 0){
+        voice.cutoff *= std::exp(velocitySensitivity * float(velocity - 64));
+    }
 }
 
 void Synth::shiftQueuedNotes()

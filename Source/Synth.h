@@ -45,6 +45,7 @@ public:
     float glideRate;
     float glideBend;
     float filterKeyTracking;
+    float filterQ;
     
     
 private:
@@ -70,6 +71,7 @@ private:
     float lfo;
     float modWheel;
     int lastNote;
+    float resonanceCtl;
     
     inline void updatePeriod(Voice& voice)
     {
