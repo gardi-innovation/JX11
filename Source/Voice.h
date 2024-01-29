@@ -73,8 +73,8 @@ struct Voice
     {
         period += glideRate * (target - period);
         
-        float modulatedCutoff = cutoff * std::exp(filterMod);
-        modulatedCutoff = cutoff * std::exp(filterMod) / pitchBend; //std::clamp(modulatedCutoff, 30.0f, 20000.0f);
+        float modulatedCutoff = cutoff * std::exp(filterMod) / pitchBend;
+        modulatedCutoff = std::clamp(modulatedCutoff, 30.0f, 20000.0f);
         filter.updateCoefficients(modulatedCutoff, filterQ);
     }
 };

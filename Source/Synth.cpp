@@ -104,8 +104,8 @@ void Synth::render(float** outputBuffers, int sampleCount)
         }
     }
     
-    //protectYourEars(outputBufferLeft, sampleCount);
-    //protectYourEars(outputBufferRight, sampleCount);
+    protectYourEars(outputBufferLeft, sampleCount);
+    protectYourEars(outputBufferRight, sampleCount);
 }
 
 void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
@@ -267,6 +267,7 @@ void Synth::controlChange(uint8_t data1, uint8_t data2)
                 noteOff(SUSTAIN);
             }
             break;
+        // Resonance
         case 0x47:
             resonanceCtl = 154.0f / float(154 - data2);
             break;
