@@ -74,6 +74,7 @@ private:
     int lastNote;
     float resonanceCtl;
     float pressure;
+    float filterCtl;
     
     inline void updatePeriod(Voice& voice)
     {
