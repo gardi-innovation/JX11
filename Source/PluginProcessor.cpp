@@ -298,6 +298,9 @@ void JX11AudioProcessor::update()
     synth.filterQ = std::exp(3.0f * filterReso);
     
     synth.volumeTrim = 0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * (1.5f - 0.5f * filterReso);
+    
+    float filterLFO = filterLFOParam->get() / 100.0f;
+    synth.filterLFODepth = 2.5f * filterLFO * filterLFO;
 }
 
 void JX11AudioProcessor::splitBufferByEvents(juce::AudioBuffer<float>& buffer, juce::MidiBuffer& midiMessages)

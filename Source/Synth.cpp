@@ -48,6 +48,7 @@ void Synth::reset()
     modWheel = 0.0f;
     lastNote = 0;
     resonanceCtl = 1.0f;
+    pressure = 0.0f;
 }
 
 void Synth::render(float** outputBuffers, int sampleCount)
@@ -124,6 +125,11 @@ void Synth::midiMessage(uint8_t data0, uint8_t data1, uint8_t data2)
         }
         break;
     }
+    
+    // Channel aftertouch
+    case 0xD0:
+        pressure = 0.0001f * float(data1 * data1);
+        break;
             
     // Pitch bend
     case 0xE0:
@@ -330,7 +336,7 @@ void Synth::updateLFO()
         float vibratoMod = 1.0f + sine * (modWheel + vibrato);
         float pwm = 1.0f + sine * (modWheel + pwmDepth);
         
-        float filterMod = filterKeyTracking;
+        float filterMod = filterKeyTracking + (filterLFODepth + pressure) * sine;
         
         for (int v = 0; v < MAX_VOICES; ++v){
             Voice& voice = voices[v];
