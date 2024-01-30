@@ -47,6 +47,11 @@ public:
     float filterKeyTracking;
     float filterQ;
     float filterLFODepth;
+    float filterAttack;
+    float filterDecay;
+    float filterSustain;
+    float filterRelease;
+    float filterEnvDepth;
     
     
 private:
