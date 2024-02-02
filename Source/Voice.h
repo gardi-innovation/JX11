@@ -12,7 +12,8 @@
 
 #include "Oscillator.h"
 #include "Envelope.h"
-#include "Filter.h"
+//#include "Filter.h"
+#include "FilterLadder.h"
 
 struct Voice
 {
@@ -25,7 +26,8 @@ struct Voice
     float panLeft, panRight;
     float target;
     float glideRate;
-    Filter filter;
+    //Filter filter;
+    FilterLadder filter;
     float cutoff;
     float filterMod;
     float filterQ;
