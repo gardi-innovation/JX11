@@ -25,9 +25,10 @@ public:
     void resized() override;
 
 private:
-    // This reference is provided as a quick way for your editor to
-    // access the processor object that created it.
     JX11AudioProcessor& audioProcessor;
-
+    juce::Slider outputLevelKnob;
+    using AVPTS = juce::AudioProcessorValueTreeState;
+    using SliderAttachment = AVPTS::SliderAttachment;
+    SliderAttachment outputLevelAttachment { audioProcessor.apvts, ParameterID::outputLevel.getParamID(), outputLevelKnob };
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JX11AudioProcessorEditor)
 };
