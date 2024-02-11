@@ -27,8 +27,15 @@ public:
 private:
     JX11AudioProcessor& audioProcessor;
     juce::Slider outputLevelKnob;
-    using AVPTS = juce::AudioProcessorValueTreeState;
-    using SliderAttachment = AVPTS::SliderAttachment;
+    using APVTS = juce::AudioProcessorValueTreeState;
+    using SliderAttachment = APVTS::SliderAttachment;
     SliderAttachment outputLevelAttachment { audioProcessor.apvts, ParameterID::outputLevel.getParamID(), outputLevelKnob };
+    juce::Slider filterResoKnob;
+    SliderAttachment filterResoAttachment { audioProcessor.apvts, ParameterID::filterReso.getParamID(), filterResoKnob };
+    
+    using ButtonAttachment = APVTS::ButtonAttachment;
+    juce::TextButton polyModeButton;
+    ButtonAttachment polyModeAttachment { audioProcessor.apvts, ParameterID::polyMode.getParamID(), polyModeButton };
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JX11AudioProcessorEditor)
 };
