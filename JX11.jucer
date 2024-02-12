@@ -6,6 +6,8 @@
               pluginCode="JX11" pluginManufacturerCode="Gain" displaySplashScreen="0">
   <MAINGROUP id="yoRVeF" name="JX11">
     <GROUP id="{CDA481BB-8D83-EA68-F979-EAAB16CEFAD0}" name="Source">
+      <FILE id="MyUJCJ" name="RotaryKnob.cpp" compile="1" resource="0" file="Source/RotaryKnob.cpp"/>
+      <FILE id="vs8uOo" name="RotaryKnob.h" compile="0" resource="0" file="Source/RotaryKnob.h"/>
       <FILE id="rrPKVL" name="FilterLadder.h" compile="0" resource="0" file="Source/FilterLadder.h"/>
       <FILE id="Z654ok" name="Filter.h" compile="0" resource="0" file="Source/Filter.h"/>
       <FILE id="EMwLtg" name="Envelope.h" compile="0" resource="0" file="Source/Envelope.h"/>

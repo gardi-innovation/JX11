@@ -10,6 +10,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include "RotaryKnob.h"
 
 //==============================================================================
 /**
@@ -26,12 +27,12 @@ public:
 
 private:
     JX11AudioProcessor& audioProcessor;
-    juce::Slider outputLevelKnob;
+    RotaryKnob outputLevelKnob;
     using APVTS = juce::AudioProcessorValueTreeState;
     using SliderAttachment = APVTS::SliderAttachment;
-    SliderAttachment outputLevelAttachment { audioProcessor.apvts, ParameterID::outputLevel.getParamID(), outputLevelKnob };
-    juce::Slider filterResoKnob;
-    SliderAttachment filterResoAttachment { audioProcessor.apvts, ParameterID::filterReso.getParamID(), filterResoKnob };
+    SliderAttachment outputLevelAttachment { audioProcessor.apvts, ParameterID::outputLevel.getParamID(), outputLevelKnob.slider };
+    RotaryKnob filterResoKnob;
+    SliderAttachment filterResoAttachment { audioProcessor.apvts, ParameterID::filterReso.getParamID(), filterResoKnob.slider };
     
     using ButtonAttachment = APVTS::ButtonAttachment;
     juce::TextButton polyModeButton;
