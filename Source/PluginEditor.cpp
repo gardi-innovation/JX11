@@ -35,7 +35,9 @@ JX11AudioProcessorEditor::~JX11AudioProcessorEditor()
 //==============================================================================
 void JX11AudioProcessorEditor::paint (juce::Graphics& g)
 {
-    g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+    //g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
+    auto image = juce::ImageCache::getFromMemory(BinaryData::Logo_png, BinaryData::Logo_pngSize);
+    g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), 0, 0, image.getWidth(), image.getWidth());
 }
 
 void JX11AudioProcessorEditor::resized()

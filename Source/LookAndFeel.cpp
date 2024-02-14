@@ -22,6 +22,9 @@ LookAndFeel::LookAndFeel()
     setColour(juce::TextButton::textColourOffId, juce::Colour(180, 180, 180));
     setColour(juce::TextButton::textColourOnId, juce::Colour(255, 255, 255));
     setColour(juce::ComboBox::outlineColourId, juce::Colour(180, 180, 180));
+    
+    juce::Typeface::Ptr typeface = juce::Typeface::createSystemTypefaceFor(BinaryData::LatoMedium_ttf, BinaryData::LatoMedium_ttfSize);
+    setDefaultSansSerifTypeface(typeface);
 }
 
 void LookAndFeel::drawRotarySlider(juce::Graphics& g, int x, int y, int width, int /*height*/, float sliderPos, float rotaryStartAngle, float rotaryEndAngle, juce::Slider& slider){
