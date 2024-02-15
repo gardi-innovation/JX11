@@ -178,6 +178,7 @@ void JX11AudioProcessor::reset()
 {
     synth.reset();
     synth.outputLevelSmoother.setCurrentAndTargetValue(juce::Decibels::decibelsToGain((outputLevelParam->get())));
+    midiLearn = false;
 }
 
 #ifndef JucePlugin_PreferredChannelConfigurations

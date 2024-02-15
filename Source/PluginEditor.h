@@ -16,7 +16,7 @@
 //==============================================================================
 /**
 */
-class JX11AudioProcessorEditor  : public juce::AudioProcessorEditor
+class JX11AudioProcessorEditor  : public juce::AudioProcessorEditor, private juce::Button::Listener
 {
 public:
     JX11AudioProcessorEditor (JX11AudioProcessor&);
@@ -27,6 +27,7 @@ public:
     void resized() override;
 
 private:
+    void buttonClicked(juce::Button* button) override;
     JX11AudioProcessor& audioProcessor;
     RotaryKnob outputLevelKnob;
     using APVTS = juce::AudioProcessorValueTreeState;
@@ -40,6 +41,8 @@ private:
     ButtonAttachment polyModeAttachment { audioProcessor.apvts, ParameterID::polyMode.getParamID(), polyModeButton };
     
     LookAndFeel globalLNF;
+    
+    juce::TextButton midiLearnButton;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JX11AudioProcessorEditor)
 };

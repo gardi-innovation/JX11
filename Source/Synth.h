@@ -52,6 +52,7 @@ public:
     float filterSustain;
     float filterRelease;
     float filterEnvDepth;
+    uint8_t resoCC = 0x47;
     
     
 private:
