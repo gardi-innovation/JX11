@@ -16,7 +16,7 @@
 //==============================================================================
 /**
 */
-class JX11AudioProcessorEditor  : public juce::AudioProcessorEditor, private juce::Button::Listener
+class JX11AudioProcessorEditor  : public juce::AudioProcessorEditor, private juce::Button::Listener, private juce::Timer
 {
 public:
     JX11AudioProcessorEditor (JX11AudioProcessor&);
@@ -43,6 +43,8 @@ private:
     LookAndFeel globalLNF;
     
     juce::TextButton midiLearnButton;
+    
+    void timerCallback() override;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JX11AudioProcessorEditor)
 };
