@@ -141,6 +141,8 @@ private:
     
     std::atomic<bool> parametersChanged{ false };
     
+    std::atomic<uint8_t> midiLearnCC;
+    
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (JX11AudioProcessor)
 };
