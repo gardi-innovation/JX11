@@ -29,7 +29,15 @@ JX11AudioProcessorEditor::JX11AudioProcessorEditor (JX11AudioProcessor& p)
     midiLearnButton.addListener(this);
     addAndMakeVisible(midiLearnButton);
     
-    setSize (600, 400);
+    auto imageFull = juce::ImageCache::getFromMemory(BinaryData::CloseupFrontviewWhitefacadeofdirtyindustrialmetalTheentirecenteriswhite_jpg, BinaryData::CloseupFrontviewWhitefacadeofdirtyindustrialmetalTheentirecenteriswhite_jpgSize);
+    
+    auto imageScaled = imageFull.rescaled(imageFull.getWidth()*(0.3), imageFull.getHeight()*(0.3));
+    DBG(imageFull.getWidth());
+    DBG(imageFull.getHeight());
+    DBG(imageScaled.getWidth());
+    DBG(imageScaled.getHeight());
+    
+    setSize (imageScaled.getWidth(),imageScaled.getHeight());
 }
 
 JX11AudioProcessorEditor::~JX11AudioProcessorEditor()
@@ -42,8 +50,17 @@ JX11AudioProcessorEditor::~JX11AudioProcessorEditor()
 void JX11AudioProcessorEditor::paint (juce::Graphics& g)
 {
     //g.fillAll(getLookAndFeel().findColour(juce::ResizableWindow::backgroundColourId));
-    auto image = juce::ImageCache::getFromMemory(BinaryData::Logo_png, BinaryData::Logo_pngSize);
-    g.drawImage(image, 0, 0, image.getWidth(), image.getHeight(), 0, 0, image.getWidth(), image.getWidth());
+    //auto image = juce::ImageCache::getFromMemory(BinaryData::Logo_png, BinaryData::Logo_pngSize);
+    auto imageFull = juce::ImageCache::getFromMemory(BinaryData::CloseupFrontviewWhitefacadeofdirtyindustrialmetalTheentirecenteriswhite_jpg, BinaryData::CloseupFrontviewWhitefacadeofdirtyindustrialmetalTheentirecenteriswhite_jpgSize);
+    
+    auto imageScaled = imageFull.rescaled(imageFull.getWidth()*(0.3), imageFull.getHeight()*0.3);
+    
+    DBG(imageFull.getWidth());
+    DBG(imageFull.getHeight());
+    DBG(imageScaled.getWidth());
+    DBG(imageScaled.getHeight());
+    
+    g.drawImage(imageScaled, 0, 0, imageScaled.getWidth(), imageScaled.getHeight(), 0, 0, imageScaled.getWidth(), imageScaled.getHeight());
 }
 
 void JX11AudioProcessorEditor::resized()
