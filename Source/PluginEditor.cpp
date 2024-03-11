@@ -13,21 +13,39 @@
 JX11AudioProcessorEditor::JX11AudioProcessorEditor (JX11AudioProcessor& p)
     : AudioProcessorEditor (&p), audioProcessor (p)
 {
-    outputLevelKnob.label = "Level";
-    addAndMakeVisible(outputLevelKnob);
+    typeKnob.label = "Type";
+    addAndMakeVisible(typeKnob);
 
-    filterResoKnob.label = "Reso";
-    addAndMakeVisible(filterResoKnob);
+    toneKnob.label = "Tone";
+    addAndMakeVisible(toneKnob);
+    
+    shapeKnob.label = "Shape";
+    addAndMakeVisible(shapeKnob);
+    
+    styleKnob.label = "Style";
+    addAndMakeVisible(styleKnob);
     
     polyModeButton.setButtonText("Poly");
     polyModeButton.setClickingTogglesState(true);
     addAndMakeVisible(polyModeButton);
     
+    glideModeButton.setButtonText("Glide");
+    glideModeButton.setClickingTogglesState(true);
+    addAndMakeVisible(glideModeButton);
+    
+    surpriseModeButton.setButtonText("Surprise");
+    surpriseModeButton.setClickingTogglesState(true);
+    addAndMakeVisible(surpriseModeButton);
+    
+    bypassModeButton.setButtonText("Bypass");
+    bypassModeButton.setClickingTogglesState(true);
+    addAndMakeVisible(bypassModeButton);
+    
     juce::LookAndFeel::setDefaultLookAndFeel(&globalLNF);
     
-    midiLearnButton.setButtonText("MIDI Learn");
-    midiLearnButton.addListener(this);
-    addAndMakeVisible(midiLearnButton);
+    //midiLearnButton.setButtonText("MIDI Learn");
+    //midiLearnButton.addListener(this);
+    //addAndMakeVisible(midiLearnButton);
     
     auto imageFull = juce::ImageCache::getFromMemory(BinaryData::CloseupFrontviewWhitefacadeofdirtyindustrialmetalTheentirecenteriswhite_jpg, BinaryData::CloseupFrontviewWhitefacadeofdirtyindustrialmetalTheentirecenteriswhite_jpgSize);
     
@@ -69,16 +87,31 @@ void JX11AudioProcessorEditor::resized()
     //filterResoKnob.setBounds(120, 20, 100, 120);
     //polyModeButton.setBounds(240, 20, 80, 30);
     
-    juce::Rectangle r(20, 20, 200, 220);
-    outputLevelKnob.setBounds(r);
+    juce::Rectangle rTypeKnob(20, 100, 100, 120);
+    typeKnob.setBounds(rTypeKnob);
     
-    r = r.withX(r.getRight() + 20);
-    filterResoKnob.setBounds(r);
+    juce::Rectangle rToneKnob = rTypeKnob.withX(rTypeKnob.getRight() + 20);
+    toneKnob.setBounds(rToneKnob);
+    
+    juce::Rectangle rShapeKnob = rToneKnob.withX(rToneKnob.getRight() + 20);
+    shapeKnob.setBounds(rShapeKnob);
+    
+    juce::Rectangle rStyleKnob = rShapeKnob.withX(rShapeKnob.getRight() + 20);
+    styleKnob.setBounds(rStyleKnob);
     
     polyModeButton.setSize(80, 30);
-    polyModeButton.setCentrePosition(r.withX(r.getRight()).getCentre());
+    polyModeButton.setCentrePosition({rTypeKnob.getCentreX(), rTypeKnob.getCentreY() - 100});
     
-    midiLearnButton.setBounds(400, 20, 100, 30);
+    glideModeButton.setSize(80, 30);
+    glideModeButton.setCentrePosition(rToneKnob.getCentreX(), rToneKnob.getCentreY() - 100);
+    
+    surpriseModeButton.setSize(80, 30);
+    surpriseModeButton.setCentrePosition(rShapeKnob.getCentreX(), rShapeKnob.getCentreY() - 100);
+    
+    bypassModeButton.setSize(80, 30);
+    bypassModeButton.setCentrePosition(rStyleKnob.getCentreX(), rStyleKnob.getCentreY() - 100);
+    
+    //midiLearnButton.setBounds(400, 20, 100, 30);
 }
 
 void JX11AudioProcessorEditor::buttonClicked(juce::Button* button)
