@@ -29,16 +29,27 @@ public:
 private:
     void buttonClicked(juce::Button* button) override;
     JX11AudioProcessor& audioProcessor;
-    RotaryKnob outputLevelKnob;
+    RotaryKnob typeKnob;
+    RotaryKnob toneKnob;
+    RotaryKnob shapeKnob;
+    RotaryKnob styleKnob;
+    
     using APVTS = juce::AudioProcessorValueTreeState;
     using SliderAttachment = APVTS::SliderAttachment;
-    SliderAttachment outputLevelAttachment { audioProcessor.apvts, ParameterID::outputLevel.getParamID(), outputLevelKnob.slider };
-    RotaryKnob filterResoKnob;
-    SliderAttachment filterResoAttachment { audioProcessor.apvts, ParameterID::filterReso.getParamID(), filterResoKnob.slider };
+    SliderAttachment outputLevelAttachment { audioProcessor.apvts, ParameterID::outputLevel.getParamID(), typeKnob.slider };
+    SliderAttachment filterResoAttachment { audioProcessor.apvts, ParameterID::filterReso.getParamID(), toneKnob.slider };
+    SliderAttachment shapeAttachment { audioProcessor.apvts, ParameterID::filterReso.getParamID(), shapeKnob.slider };
+    SliderAttachment styleAttachment { audioProcessor.apvts, ParameterID::filterReso.getParamID(), styleKnob.slider };
     
-    using ButtonAttachment = APVTS::ButtonAttachment;
     juce::TextButton polyModeButton;
+    juce::TextButton glideModeButton;
+    juce::TextButton surpriseModeButton;
+    juce::TextButton bypassModeButton;
+    using ButtonAttachment = APVTS::ButtonAttachment;
     ButtonAttachment polyModeAttachment { audioProcessor.apvts, ParameterID::polyMode.getParamID(), polyModeButton };
+    ButtonAttachment glideModeAttachment { audioProcessor.apvts, ParameterID::polyMode.getParamID(), glideModeButton };
+    ButtonAttachment surpriseModeAttachment { audioProcessor.apvts, ParameterID::polyMode.getParamID(), surpriseModeButton };
+    ButtonAttachment bypassModeAttachment { audioProcessor.apvts, ParameterID::polyMode.getParamID(), bypassModeButton };
     
     LookAndFeel globalLNF;
     
