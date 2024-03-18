@@ -16,6 +16,8 @@ namespace ParameterID
 {
     #define PARAMETER_ID(str) const juce::ParameterID str(#str, 1);
 
+    PARAMETER_ID(type)
+
     PARAMETER_ID(oscMix)
     PARAMETER_ID(oscTune)
     PARAMETER_ID(oscFine)
@@ -136,6 +138,8 @@ private:
     juce::AudioParameterFloat* tuningParam;
     juce::AudioParameterFloat* outputLevelParam;
     juce::AudioParameterChoice* polyModeParam;
+    
+    juce::AudioParameterFloat* typeParam;
     
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     

@@ -27,6 +27,9 @@ JX11AudioProcessor::JX11AudioProcessor()
                        )
 #endif
 {
+    castParameter(apvts, ParameterID::type, typeParam);
+    
+    
     castParameter(apvts, ParameterID::oscMix, oscMixParam);
     castParameter(apvts, ParameterID::oscTune, oscTuneParam);
     castParameter(apvts, ParameterID::oscFine, oscFineParam);
@@ -236,7 +239,76 @@ void JX11AudioProcessor::update()
 {
     float sampleRate = float(getSampleRate());
     float inverseSampleRate = 1.0f / sampleRate;
+    const float inverseUpdateRate = inverseSampleRate * synth.LFO_MAX;
     
+    // Switches
+    synth.numVoices = (polyModeParam->getIndex() == 0) ? 1 : Synth::MAX_VOICES;
+    
+    synth.glideMode = glideModeParam->getIndex();
+    
+    //Type
+    //float semi = oscTuneParam->get();
+    float semi = typeParam->get();
+    
+      if(semi < 0.25f)
+        semi = 0.0f;
+      else if(semi < 0.5f)
+        semi = 0.25f;
+      else if(semi < 0.75f)
+        semi = 0.75f;
+      else
+      semi = 1.0f;
+                  
+    semi = (semi * 48.0f) - 24.0f; //Range -24.0f to +24.0f
+    
+    //float cent = oscFineParam->get();
+    float cent = (typeParam->get() * 20) - 10; //Range -10 to +10
+    
+    synth.detune = std::pow(1.059463094359f, - semi - 0.01f * cent);
+    
+    //synth.oscMix = oscMixParam->get() / 100.0f;
+    synth.oscMix = typeParam->get() * 100.f;
+    
+    //float glideRate = glideRateParam->get();
+    float glideRate = (typeParam->get() * 20); //Range 1.0f to 20.0f
+    if(glideRate < 2.0f){
+        synth.glideRate = 1.0f;
+    }else{
+        synth.glideRate = 1.0f - std::exp(-inverseSampleRate * std::exp(6.0f - 0.07f * glideRate));
+    }
+    
+    //synth.glideBend = glideBendParam->get();
+    synth.glideBend = (typeParam->get() * 72) - 36; //Range -36.0f to 36.0f
+    
+    //Tone
+    synth.filterKeyTracking = 0.08f * filterFreqParam->get() - 1.5f;
+    
+    float filterReso = filterReleaseParam->get() / 100.0f;
+    synth.filterQ = std::exp(3.0f * filterReso);
+    
+    synth.filterEnvDepth = 0.06f * filterEnvParam->get();
+    
+    float filterLFO = filterLFOParam->get() / 100.0f;
+    synth.filterLFODepth = 2.5f * filterLFO * filterLFO;
+    
+    float filterVelocity = filterVelocityParam->get();
+    if(filterVelocity < -90.0f){
+        synth.velocitySensitivity = 0.0f;
+        synth.ignoreVelocity = true;
+    }else{
+        synth.velocitySensitivity = 0.0005f * filterVelocity;
+        synth.ignoreVelocity = false;
+    }
+    
+    synth.filterAttack = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterDecayParam->get()));
+    synth.filterDecay = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterDecayParam->get()));
+    float filterSustain = filterSustainParam->get() / 100.0f;
+    synth.filterSustain = filterSustain * filterSustain;
+    synth.filterRelease = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterReleaseParam->get()));
+
+    
+    
+    //Shape
     synth.envAttack = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envAttackParam->get()));
     
     synth.envDecay = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envDecayParam->get()));
@@ -250,71 +322,28 @@ void JX11AudioProcessor::update()
         synth.envRelease = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envRelease));
     }
     
-    float noiseMix = noiseParam->get() / 100.0f;
-    noiseMix *= noiseMix;
-    synth.noiseMix = noiseMix * 0.06f;
-    
-    synth.oscMix = oscMixParam->get() / 100.0f;
-    
-    float semi = oscTuneParam->get();
-    float cent = oscFineParam->get();
-    synth.detune = std::pow(1.059463094359f, - semi - 0.01f * cent);
-    
-    float octave = octaveParam->get();
-    float tuning = tuningParam->get();
-    float tuneInSemi = -36.3763f - 12.0f * octave - tuning / 100.0f;
-    synth.tune = sampleRate * std::exp(0.05776226505f * tuneInSemi); //octave * 12.0f + tuning / 100.0f;
-    
-    synth.numVoices = (polyModeParam->getIndex() == 0) ? 1 : Synth::MAX_VOICES;
-    
-    synth.outputLevelSmoother.setTargetValue(juce::Decibels::decibelsToGain(outputLevelParam->get()));
-    
-    float filterVelocity = filterVelocityParam->get();
-    if(filterVelocity < -90.0f){
-        synth.velocitySensitivity = 0.0f;
-        synth.ignoreVelocity = true;
-    }else{
-        synth.velocitySensitivity = 0.0005f * filterVelocity;
-        synth.ignoreVelocity = false;
-    }
-    
-    const float inverseUpdateRate = inverseSampleRate * synth.LFO_MAX;
+    //Style
+
     float lfoRate = std::exp(7.0f * lfoRateParam->get() - 4.0f);
     synth.lfoInc = lfoRate * inverseUpdateRate * float(TWO_PI);
     
     float vibrato = vibratoParam->get() / 200.0f;
     synth.vibrato = 0.2f * vibrato * vibrato;
-    
     synth.pwmDepth = synth.vibrato;
     if(vibrato > 0.0f) { synth.vibrato = 0.0f; }
+
+    float noiseMix = noiseParam->get() / 100.0f;
+    noiseMix *= noiseMix;
+    synth.noiseMix = noiseMix * 0.06f;
     
-    synth.glideMode = glideModeParam->getIndex();
+    float octave = octaveParam->get();
     
-    float glideRate = glideRateParam->get();
-    if(glideRate < 2.0f){
-        synth.glideRate = 1.0f;
-    }else{
-        synth.glideRate = 1.0f - std::exp(-inverseSampleRate * std::exp(6.0f - 0.07f * glideRate));
-    }
+    float tuning = tuningParam->get();
+    float tuneInSemi = -36.3763f - 12.0f * octave - tuning / 100.0f;
+    synth.tune = sampleRate * std::exp(0.05776226505f * tuneInSemi); //octave * 12.0f + tuning / 100.0f;
     
-    synth.glideBend = glideBendParam->get();
-    
-    synth.filterKeyTracking = 0.08f * filterFreqParam->get() - 1.5f;
-    
-    float filterReso = filterReleaseParam->get() / 100.0f;
-    synth.filterQ = std::exp(3.0f * filterReso);
-    
+    synth.outputLevelSmoother.setTargetValue(juce::Decibels::decibelsToGain(outputLevelParam->get()));
     synth.volumeTrim = 0.0008f * (3.2f - synth.oscMix - 25.0f * synth.noiseMix) * (1.5f - 0.5f * filterReso);
-    
-    float filterLFO = filterLFOParam->get() / 100.0f;
-    synth.filterLFODepth = 2.5f * filterLFO * filterLFO;
-    
-    synth.filterAttack = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterDecayParam->get()));
-    synth.filterDecay = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterDecayParam->get()));
-    float filterSustain = filterSustainParam->get() / 100.0f;
-    synth.filterSustain = filterSustain * filterSustain;
-    synth.filterRelease = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterReleaseParam->get()));
-    synth.filterEnvDepth = 0.06f * filterEnvParam->get();
     
 }
 
@@ -496,12 +525,41 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
 {
     juce::AudioProcessorValueTreeState::ParameterLayout layout;
     
+    //Switches
     layout.add(std::make_unique<juce::AudioParameterChoice>(
-        ParameterID::polyMode, "Polyphony", juce::StringArray{"Mono","Poly"}, 1));
+        ParameterID::polyMode,
+        "Polyphony",
+        juce::StringArray{"Mono","Poly"},
+        1));
+    
+    layout.add(std::make_unique<juce::AudioParameterChoice>(
+        ParameterID::glideMode,
+        "Glide Mode",
+        juce::StringArray { "Off", "Legato", "Always" },
+        0));
+    
+    //Type-------------------------------------------------
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        ParameterID::oscTune, "Osc Tune", juce::NormalisableRange<float>(-24.0f,24.0f,1.0f),-12.0f,juce::AudioParameterFloatAttributes().withLabel("semi")));
+        ParameterID::type,
+        "Type",
+        juce::NormalisableRange<float>(0.0f,1.0f,0.1f,true),
+        0.0f,
+        juce::AudioParameterFloatAttributes().withLabel("FUCK")));
+    
+
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        ParameterID::oscFine, "Osc Fine", juce::NormalisableRange<float>(-50.0f,50.0f,0.1f,0.3f,true),0.0f,juce::AudioParameterFloatAttributes().withLabel("cent")));
+        ParameterID::oscTune, 
+        "Osc Tune",
+        juce::NormalisableRange<float>(-24.0f,24.0f,12.0f),
+        -12.0f,
+        juce::AudioParameterFloatAttributes().withLabel("semi")));
+    
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::oscFine, 
+        "Osc Fine", 
+        juce::NormalisableRange<float>(-10.0f,10.0f,0.1f,0.3f,true),
+        0.0f,
+        juce::AudioParameterFloatAttributes().withLabel("cent")));
     
     auto oscMixStringFromValue = [](float value, int)
     {
@@ -511,19 +569,18 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
     };
     
     layout.add(std::make_unique<juce::AudioParameterFloat>(
-        ParameterID::oscMix,"Osc Mix",juce::NormalisableRange<float>(0.0f,100.0f),0.0f,juce::AudioParameterFloatAttributes().withLabel("%").withStringFromValueFunction(oscMixStringFromValue)));
+        ParameterID::oscMix,
+        "OscMix",
+        juce::NormalisableRange<float>(0.0f,100.0f),0.0f,
+        juce::AudioParameterFloatAttributes().withLabel("%").withStringFromValueFunction(oscMixStringFromValue)));
     
-    layout.add(std::make_unique<juce::AudioParameterChoice>(
-        ParameterID::glideMode,
-        "Glide Mode",
-        juce::StringArray { "Off", "Legato", "Always" },
-        0));
+
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         ParameterID::glideRate,
         "Glide Rate",
-        juce::NormalisableRange<float>(0.0f, 100.f, 1.0f),
-        35.0f,
+        juce::NormalisableRange<float>(0.0f, 20.f, 1.0f),
+        0.0f,
         juce::AudioParameterFloatAttributes().withLabel("%")));
 
     layout.add(std::make_unique<juce::AudioParameterFloat>(
@@ -533,6 +590,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
         0.0f,
         juce::AudioParameterFloatAttributes().withLabel("semi")));
     
+    //Tone-------------------------------------------------
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         ParameterID::filterFreq,
         "Filter Freq",
@@ -606,6 +664,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
         25.0f,
         juce::AudioParameterFloatAttributes().withLabel("%")));
     
+    //Shape-----------------------------------------------
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         ParameterID::envAttack,
         "Env Attack",
@@ -634,6 +693,7 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
         30.0f,
         juce::AudioParameterFloatAttributes().withLabel("%")));
     
+    //Style-----------------------------------------------
     auto lfoRateStringFromValue = [](float value, int)
     {
         float lfoHz = std::exp(7.0f * value - 4.0f);
