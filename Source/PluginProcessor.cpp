@@ -28,8 +28,9 @@ JX11AudioProcessor::JX11AudioProcessor()
 #endif
 {
     castParameter(apvts, ParameterID::type, typeParam);
-    
-    
+    castParameter(apvts, ParameterID::tone, toneParam);
+    castParameter(apvts, ParameterID::shape, shapeParam);
+
     castParameter(apvts, ParameterID::oscMix, oscMixParam);
     castParameter(apvts, ParameterID::oscTune, oscTuneParam);
     castParameter(apvts, ParameterID::oscFine, oscFineParam);
@@ -281,17 +282,22 @@ void JX11AudioProcessor::update()
     synth.glideBend = (typeParam->get() * 72) - 36; //Range -36.0f to 36.0f
     
     //Tone
-    synth.filterKeyTracking = 0.08f * filterFreqParam->get() - 1.5f;
+    //synth.filterKeyTracking = 0.08f * filterFreqParam->get() - 1.5f;
+    synth.filterKeyTracking = 0.08f * toneParam->get() - 1.5f;
     
-    float filterReso = filterReleaseParam->get() / 100.0f;
+    //float filterReso = filterReleaseParam->get() / 100.0f;
+    float filterReso = toneParam->get() / 100.0f;
     synth.filterQ = std::exp(3.0f * filterReso);
     
-    synth.filterEnvDepth = 0.06f * filterEnvParam->get();
+    //synth.filterEnvDepth = 0.06f * filterEnvParam->get();
+    synth.filterEnvDepth = 0.06f * (toneParam->get() - (toneParam->get() - 100));    //Range -100 to 100
     
-    float filterLFO = filterLFOParam->get() / 100.0f;
+    //float filterLFO = filterLFOParam->get() / 100.0f;
+    float filterLFO = toneParam->get() / 100.0f;
     synth.filterLFODepth = 2.5f * filterLFO * filterLFO;
     
-    float filterVelocity = filterVelocityParam->get();
+    //float filterVelocity = filterVelocityParam->get();
+    float filterVelocity = (toneParam->get() - (toneParam->get() - 100));
     if(filterVelocity < -90.0f){
         synth.velocitySensitivity = 0.0f;
         synth.ignoreVelocity = true;
@@ -300,22 +306,30 @@ void JX11AudioProcessor::update()
         synth.ignoreVelocity = false;
     }
     
-    synth.filterAttack = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterDecayParam->get()));
-    synth.filterDecay = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterDecayParam->get()));
-    float filterSustain = filterSustainParam->get() / 100.0f;
+    //synth.filterAttack = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterDecayParam->get()));
+    synth.filterAttack = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * toneParam->get()));
+    //synth.filterDecay = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterDecayParam->get()));
+    synth.filterDecay = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * toneParam->get()));
+    //float filterSustain = filterSustainParam->get() / 100.0f;
+    float filterSustain = toneParam->get() / 100.0f;
     synth.filterSustain = filterSustain * filterSustain;
-    synth.filterRelease = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterReleaseParam->get()));
+    //synth.filterRelease = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * filterReleaseParam->get()));
+    synth.filterRelease = std::exp(-inverseUpdateRate * std::exp(5.5f - 0.075f * toneParam->get()));
 
     
     
     //Shape
-    synth.envAttack = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envAttackParam->get()));
+    //synth.envAttack = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envAttackParam->get()));
+    synth.envAttack = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * shapeParam->get()));
     
-    synth.envDecay = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envDecayParam->get()));
+    //synth.envDecay = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * envDecayParam->get()));
+    synth.envDecay = std::exp(-inverseSampleRate * std::exp(5.5f - 0.075f * shapeParam->get()));
     
-    synth.envSustain = envSustainParam->get() / 100.0f;
+    //synth.envSustain = envSustainParam->get() / 100.0f;
+    synth.envSustain = shapeParam->get() / 100.0f;
     
-    float envRelease = envReleaseParam->get();
+    //float envRelease = envReleaseParam->get();
+    float envRelease = shapeParam->get();
     if(envRelease < 1.0f){
         synth.envRelease = 0.75f; // fast release
     } else{
@@ -592,6 +606,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
     
     //Tone-------------------------------------------------
     layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::tone,
+        "Tone",
+        juce::NormalisableRange<float>(0.0f, 100.0f, 0.1f),
+        100.0f,
+        juce::AudioParameterFloatAttributes().withLabel("%")));
+    
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
         ParameterID::filterFreq,
         "Filter Freq",
         juce::NormalisableRange<float>(0.0f, 100.0f, 0.1f),
@@ -665,6 +686,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
         juce::AudioParameterFloatAttributes().withLabel("%")));
     
     //Shape-----------------------------------------------
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::shape,
+        "Shape",
+        juce::NormalisableRange<float>(0.0f, 100.0f, 1.0f),
+        0.0f,
+        juce::AudioParameterFloatAttributes().withLabel("%")));
+    
     layout.add(std::make_unique<juce::AudioParameterFloat>(
         ParameterID::envAttack,
         "Env Attack",

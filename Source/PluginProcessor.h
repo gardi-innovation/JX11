@@ -17,6 +17,8 @@ namespace ParameterID
     #define PARAMETER_ID(str) const juce::ParameterID str(#str, 1);
 
     PARAMETER_ID(type)
+    PARAMETER_ID(tone)
+    PARAMETER_ID(shape)
 
     PARAMETER_ID(oscMix)
     PARAMETER_ID(oscTune)
@@ -140,6 +142,8 @@ private:
     juce::AudioParameterChoice* polyModeParam;
     
     juce::AudioParameterFloat* typeParam;
+    juce::AudioParameterFloat* toneParam;
+    juce::AudioParameterFloat* shapeParam;
     
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     
