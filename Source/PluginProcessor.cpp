@@ -30,6 +30,7 @@ JX11AudioProcessor::JX11AudioProcessor()
     castParameter(apvts, ParameterID::type, typeParam);
     castParameter(apvts, ParameterID::tone, toneParam);
     castParameter(apvts, ParameterID::shape, shapeParam);
+    castParameter(apvts, ParameterID::style, styleParam);
 
     castParameter(apvts, ParameterID::oscMix, oscMixParam);
     castParameter(apvts, ParameterID::oscTune, oscTuneParam);
@@ -338,21 +339,26 @@ void JX11AudioProcessor::update()
     
     //Style
 
-    float lfoRate = std::exp(7.0f * lfoRateParam->get() - 4.0f);
+    //float lfoRate = std::exp(7.0f * lfoRateParam->get() - 4.0f);
+    float lfoRate = std::exp(7.0f * styleParam->get() - 4.0f);
     synth.lfoInc = lfoRate * inverseUpdateRate * float(TWO_PI);
     
-    float vibrato = vibratoParam->get() / 200.0f;
+    //float vibrato = vibratoParam->get() / 200.0f;
+    float vibrato = ((styleParam->get()*100)-100) / 200;   //Range -100 t0 100
     synth.vibrato = 0.2f * vibrato * vibrato;
     synth.pwmDepth = synth.vibrato;
     if(vibrato > 0.0f) { synth.vibrato = 0.0f; }
 
-    float noiseMix = noiseParam->get() / 100.0f;
+    //float noiseMix = noiseParam->get() / 100.0f;
+    float noiseMix = (styleParam->get()*100) / 100.0f;  //Range 0 to 100
     noiseMix *= noiseMix;
     synth.noiseMix = noiseMix * 0.06f;
     
-    float octave = octaveParam->get();
+    //float octave = octaveParam->get();
+    float octave = styleParam->get() * 4 - 2; //Range -2 to 2
     
-    float tuning = tuningParam->get();
+    //float tuning = tuningParam->get();
+    float tuning = (styleParam->get() * 200) - 100;    //Range -100 to 100
     float tuneInSemi = -36.3763f - 12.0f * octave - tuning / 100.0f;
     synth.tune = sampleRate * std::exp(0.05776226505f * tuneInSemi); //octave * 12.0f + tuning / 100.0f;
     
@@ -722,6 +728,15 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
         juce::AudioParameterFloatAttributes().withLabel("%")));
     
     //Style-----------------------------------------------
+    layout.add(std::make_unique<juce::AudioParameterFloat>(
+        ParameterID::style,
+        "Style",
+        juce::NormalisableRange<float>(0.0f, 1.0f, 0.1f),
+        0.0f,
+        juce::AudioParameterFloatAttributes().withLabel("SHIT")));
+    
+    
+    
     auto lfoRateStringFromValue = [](float value, int)
     {
         float lfoHz = std::exp(7.0f * value - 4.0f);
