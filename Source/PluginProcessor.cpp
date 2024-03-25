@@ -252,34 +252,34 @@ void JX11AudioProcessor::update()
     //float semi = oscTuneParam->get();
     float semi = typeParam->get();
     
-      if(semi < 0.25f)
-        semi = 0.0f;
-      else if(semi < 0.5f)
-        semi = 0.25f;
-      else if(semi < 0.75f)
-        semi = 0.75f;
-      else
-      semi = 1.0f;
+      if(semi < 0.33f)
+          semi = 0.0f;
+      if(semi > 0.33f & semi < 0.66f)
+          semi = 0.5f;
+      else if (semi > 0.66f)
+          semi = 1.0f;
                   
-    semi = (semi * 48.0f) - 24.0f; //Range -24.0f to +24.0f
+    //semi = (semi * 48.0f) - 24.0f; //Range -24.0f to +24.0f
+    semi = (semi * 12.0f) - 6.0f; //Range -6.0f to +6.0f
     
     //float cent = oscFineParam->get();
-    float cent = (typeParam->get() * 20) - 10; //Range -10 to +10
+    float cent = (typeParam->get() * 10) - 5; //Range -10 to +10
     
     synth.detune = std::pow(1.059463094359f, - semi - 0.01f * cent);
     
     //synth.oscMix = oscMixParam->get() / 100.0f;
-    synth.oscMix = typeParam->get() * 100.f;
+
+    synth.oscMix = setRange(typeParam->get(), 1, 100, 0.2); // Map input range (0-1) to output range (0-100) with a skew of 0.2
     
     //float glideRate = glideRateParam->get();
-    float glideRate = (typeParam->get() * 20); //Range 1.0f to 20.0f
-    if(glideRate < 2.0f){
-        synth.glideRate = 1.0f;
-    }else{
-        synth.glideRate = 1.0f - std::exp(-inverseSampleRate * std::exp(6.0f - 0.07f * glideRate));
-    }
+//    float glideRate = (typeParam->get() * 20); //Range 1.0f to 20.0f
+//    if(glideRate < 2.0f){
+//        synth.glideRate = 1.0f;
+//    }else{
+//        synth.glideRate = 1.0f - std::exp(-inverseSampleRate * std::exp(6.0f - 0.07f * glideRate));
+//    }
     
-    //synth.glideBend = glideBendParam->get();
+    synth.glideBend = glideBendParam->get();
     synth.glideBend = (typeParam->get() * 72) - 36; //Range -36.0f to 36.0f
     
     //Tone
@@ -797,6 +797,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
         juce::AudioParameterFloatAttributes().withLabel("dB")));
     
     return layout;
+}
+
+float JX11AudioProcessor::setRange(float input, float maxX, float maxY, float skew)
+{
+    float powTemp = std::pow( (input/maxX), skew);
+    
+    return powTemp * maxY;
 }
 
 //==============================================================================

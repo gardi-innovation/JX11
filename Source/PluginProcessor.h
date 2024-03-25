@@ -149,6 +149,8 @@ private:
     
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     
+    float setRange(float input, float maxX, float maxY, float skew);
+    
     std::atomic<bool> parametersChanged{ false };
     
     std::atomic<uint8_t> midiLearnCC;
