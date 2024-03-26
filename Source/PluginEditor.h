@@ -38,22 +38,19 @@ private:
     using SliderAttachment = APVTS::SliderAttachment;
     
     SliderAttachment typeAttachment1 { audioProcessor.apvts, ParameterID::type.getParamID(), typeKnob.slider };
-    
     SliderAttachment toneAttachment1 { audioProcessor.apvts, ParameterID::tone.getParamID(), toneKnob.slider };
-    
     SliderAttachment shapeAttachment1 { audioProcessor.apvts, ParameterID::shape.getParamID(), shapeKnob.slider };
-    
     SliderAttachment styleAttachment1 { audioProcessor.apvts, ParameterID::style.getParamID(), styleKnob.slider };
     
     juce::TextButton polyModeButton;
     juce::TextButton glideModeButton;
     juce::TextButton surpriseModeButton;
-    juce::TextButton bypassModeButton;
+    juce::TextButton pitchModeButton;
     using ButtonAttachment = APVTS::ButtonAttachment;
     ButtonAttachment polyModeAttachment { audioProcessor.apvts, ParameterID::polyMode.getParamID(), polyModeButton };
     ButtonAttachment glideModeAttachment { audioProcessor.apvts, ParameterID::glideMode.getParamID(), glideModeButton };
     ButtonAttachment surpriseModeAttachment { audioProcessor.apvts, ParameterID::polyMode.getParamID(), surpriseModeButton };
-    ButtonAttachment bypassModeAttachment { audioProcessor.apvts, ParameterID::polyMode.getParamID(), bypassModeButton };
+    ButtonAttachment pitchModeAttachment { audioProcessor.apvts, ParameterID::pitchMode.getParamID(), pitchModeButton };
     
     LookAndFeel globalLNF;
     

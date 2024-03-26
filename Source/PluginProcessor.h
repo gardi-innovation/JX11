@@ -20,6 +20,7 @@ namespace ParameterID
     PARAMETER_ID(tone)
     PARAMETER_ID(shape)
     PARAMETER_ID(style)
+    PARAMETER_ID(pitchMode)
 
     PARAMETER_ID(oscMix)
     PARAMETER_ID(oscTune)
@@ -146,6 +147,7 @@ private:
     juce::AudioParameterFloat* toneParam;
     juce::AudioParameterFloat* shapeParam;
     juce::AudioParameterFloat* styleParam;
+    juce::AudioParameterChoice* pitchModeParam;
     
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     

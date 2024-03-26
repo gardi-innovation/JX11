@@ -37,9 +37,9 @@ JX11AudioProcessorEditor::JX11AudioProcessorEditor (JX11AudioProcessor& p)
     surpriseModeButton.setClickingTogglesState(true);
     addAndMakeVisible(surpriseModeButton);
     
-    bypassModeButton.setButtonText("Bypass");
-    bypassModeButton.setClickingTogglesState(true);
-    addAndMakeVisible(bypassModeButton);
+    pitchModeButton.setButtonText("Pitch");
+    pitchModeButton.setClickingTogglesState(true);
+    addAndMakeVisible(pitchModeButton);
     
     juce::LookAndFeel::setDefaultLookAndFeel(&globalLNF);
     
@@ -108,8 +108,8 @@ void JX11AudioProcessorEditor::resized()
     surpriseModeButton.setSize(80, 30);
     surpriseModeButton.setCentrePosition(rShapeKnob.getCentreX(), rShapeKnob.getCentreY() - 100);
     
-    bypassModeButton.setSize(80, 30);
-    bypassModeButton.setCentrePosition(rStyleKnob.getCentreX(), rStyleKnob.getCentreY() - 100);
+    pitchModeButton.setSize(80, 30);
+    pitchModeButton.setCentrePosition(rStyleKnob.getCentreX(), rStyleKnob.getCentreY() - 100);
     
     //midiLearnButton.setBounds(400, 20, 100, 30);
 }
