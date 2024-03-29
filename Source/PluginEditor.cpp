@@ -41,6 +41,11 @@ JX11AudioProcessorEditor::JX11AudioProcessorEditor (JX11AudioProcessor& p)
     pitchModeButton.setClickingTogglesState(true);
     addAndMakeVisible(pitchModeButton);
     
+    outputFader.setSliderStyle(juce::Slider::SliderStyle::LinearVertical);
+    outputFader.setTextBoxStyle(juce::Slider::TextBoxBelow, false, 50, 20);
+    outputFader.setRange(-24.0, 3.0, 0.1);
+    addAndMakeVisible(outputFader);
+    
     juce::LookAndFeel::setDefaultLookAndFeel(&globalLNF);
     
     //midiLearnButton.setButtonText("MIDI Learn");
@@ -83,9 +88,6 @@ void JX11AudioProcessorEditor::paint (juce::Graphics& g)
 
 void JX11AudioProcessorEditor::resized()
 {
-    //outputLevelKnob.setBounds(20, 20, 100, 120);
-    //filterResoKnob.setBounds(120, 20, 100, 120);
-    //polyModeButton.setBounds(240, 20, 80, 30);
     
     juce::Rectangle rTypeKnob(20, 100, 100, 120);
     typeKnob.setBounds(rTypeKnob);
@@ -98,6 +100,9 @@ void JX11AudioProcessorEditor::resized()
     
     juce::Rectangle rStyleKnob = rShapeKnob.withX(rShapeKnob.getRight() + 20);
     styleKnob.setBounds(rStyleKnob);
+    
+    juce::Rectangle rOutputFader = rStyleKnob.withX(rStyleKnob.getRight() - 20);
+    outputFader.setBounds(rOutputFader);
     
     polyModeButton.setSize(80, 30);
     polyModeButton.setCentrePosition({rTypeKnob.getCentreX(), rTypeKnob.getCentreY() - 100});
