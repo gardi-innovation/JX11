@@ -263,16 +263,20 @@ void JX11AudioProcessor::update()
           semi = 1.0f;
                   
     //semi = (semi * 48.0f) - 24.0f; //Range -24.0f to +24.0f
-    semi = (semi * 12.0f) - 6.0f; //Range -6.0f to +6.0f
+    semi = (semi * 24.0f) - 12.0f; //Range -6.0f to +6.0f
+    semi -= 12.0;
     
     //float cent = oscFineParam->get();
-    float cent = (typeParam->get() * 10) - 5; //Range -10 to +10
+    //float cent = (typeParam->get() * 10) - 5; //Range -10 to +10
+    float cent = 0.0f;
     
     synth.detune = std::pow(1.059463094359f, - semi - 0.01f * cent);
     
     //synth.oscMix = oscMixParam->get() / 100.0f;
 
-    synth.oscMix = setRange(typeParam->get(), 1, 100, 0.2); // Map input range (0-1) to output range (0-100) with a skew of 0.2
+    //synth.oscMix = setRange(typeParam->get(), 1, 100, 0.2); // Map input range (0-1) to output range (0-100) with a skew of 0.2
+    synth.oscMix = 100;
+    //synth.oscMix = exponentialDecayEquation(typeParam->get(), 100, 10);
     
     float glideRate = 1.0f;
     if(pitchMode){
@@ -366,13 +370,22 @@ void JX11AudioProcessor::update()
     
     //float octave = octaveParam->get();
     float octave = 1;
-    if(pitchMode)
-        octave = styleParam->get() * 4 - 2; //Range -2 to 2
+    if(pitchMode){
+        octave = styleParam->get();
+        if(octave < 0.25)
+            octave = -2;
+        else if(octave < 0.5)
+            octave = -1;
+        else if(octave < 0.75)
+            octave = 1;
+        else if(octave > 0.75)
+            octave = 2;
+    }
     
     //float tuning = tuningParam->get();
-    float tuning = 0;
-    if(pitchMode)
-        tuning = (styleParam->get() * 200) - 100;    //Range -100 to 100
+    float tuning = 0;   //We don't want to let the user adjust the synth tuning in cents
+    //if(pitchMode)
+    //    tuning = (styleParam->get() * 20) - 10;    //Range -10 to 10
     
     float tuneInSemi = -36.3763f - 12.0f * octave - tuning / 100.0f;
     synth.tune = sampleRate * std::exp(0.05776226505f * tuneInSemi); //octave * 12.0f + tuning / 100.0f;
@@ -821,6 +834,13 @@ juce::AudioProcessorValueTreeState::ParameterLayout JX11AudioProcessor::createPa
 float JX11AudioProcessor::setRange(float input, float maxX, float maxY, float skew)
 {
     float powTemp = std::pow( (input/maxX), skew);
+    
+    return powTemp * maxY;
+}
+
+float JX11AudioProcessor::exponentialDecayEquation(float input, float maxY, float skew)
+{
+    float powTemp = std::exp(-skew * input);
     
     return powTemp * maxY;
 }

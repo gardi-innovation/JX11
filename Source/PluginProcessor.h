@@ -152,6 +152,7 @@ private:
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
     
     float setRange(float input, float maxX, float maxY, float skew);
+    float exponentialDecayEquation(float input, float maxY, float skew);
     
     std::atomic<bool> parametersChanged{ false };
     
