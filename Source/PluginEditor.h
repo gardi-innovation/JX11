@@ -52,6 +52,9 @@ private:
     ButtonAttachment surpriseModeAttachment { audioProcessor.apvts, ParameterID::polyMode.getParamID(), surpriseModeButton };
     ButtonAttachment pitchModeAttachment { audioProcessor.apvts, ParameterID::pitchMode.getParamID(), pitchModeButton };
     
+    juce::Slider outputFader;
+    SliderAttachment outputFaderAttachment { audioProcessor.apvts, ParameterID::outputLevel.getParamID(), outputFader };
+    
     LookAndFeel globalLNF;
     
     juce::TextButton midiLearnButton;
